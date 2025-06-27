@@ -17,35 +17,69 @@
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
 stages:
   - build
-  - upload
   - deploy
 
 variables:
-  GITLAB_IMAGE: $CI_REGISTRY_IMAGE/main:$CI_COMMIT_SHORT_SHA
-  AR_IMAGE: asia-docker.pkg.dev/multi-ai-agent-system-463413/disastermanagement-repo/main:$CI_COMMIT_SHORT_SHA
+  AR_IMAGE: asia-south2-docker.pkg.dev/multi-ai-agent-system-463413/disastermanagement-repo/disastermanagement:$CI_COMMIT_SHORT_SHA
 
 build:
-  stage: build
-  # tags: [saas-linux-2xlarge-amd64]
   image: docker:20.10
+  stage: build
   services:
     - docker:20.10-dind
-  before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  # before_script:
+  #   - docker login -u _json_key -p "$GCLOUD_SERVICE_KEY" https://asia-south2-docker.pkg.dev
   script:
-    - docker build -t "$GITLAB_IMAGE" .
-    - docker push "$GITLAB_IMAGE"
+    - docker build -t "$AR_IMAGE" .
+    - docker push "$AR_IMAGE"
+  artifacts:
+    expire_in: 1 hour
+  only:
+    - main
 
-include:
-  - component: gitlab.com/google-gitlab-components/artifact-registry/upload-artifact-registry@main
-    inputs:
-      stage: upload
-      source: $GITLAB_IMAGE
-      target: $AR_IMAGE
-  - component: gitlab.com/google-gitlab-components/cloud-run/deploy-cloud-run@main
-    inputs:
-      stage: deploy
-      project_id: "multi-ai-agent-system-463413"
-      service: "disastermanagementcloudrun"
-      region: "asia-south2"
-      image: $AR_IMAGE
+deploy:
+  image: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+  stage: deploy
+  script:
+    - gcloud run deploy disastermanagementcloudrun \
+        --image="$AR_IMAGE" \
+        --platform=managed \
+        --region=asia-south2 \
+        --allow-unauthenticated \
+        --project=multi-ai-agent-system-463413
+  only:
+    - main
+# stages:
+#   - build
+#   - upload
+#   - deploy
+
+# variables:
+#   GITLAB_IMAGE: $CI_REGISTRY_IMAGE/main:$CI_COMMIT_SHORT_SHA
+#   AR_IMAGE: asia-docker.pkg.dev/multi-ai-agent-system-463413/disastermanagement-repo/main:$CI_COMMIT_SHORT_SHA
+
+# build:
+#   stage: build
+#   # tags: [saas-linux-2xlarge-amd64]
+#   image: docker:20.10
+#   services:
+#     - docker:20.10-dind
+#   before_script:
+#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+#   script:
+#     - docker build -t "$GITLAB_IMAGE" .
+#     - docker push "$GITLAB_IMAGE"
+
+# include:
+#   - component: gitlab.com/google-gitlab-components/artifact-registry/upload-artifact-registry@main
+#     inputs:
+#       stage: upload
+#       source: $GITLAB_IMAGE
+#       target: $AR_IMAGE
+#   - component: gitlab.com/google-gitlab-components/cloud-run/deploy-cloud-run@main
+#     inputs:
+#       stage: deploy
+#       project_id: "multi-ai-agent-system-463413"
+#       service: "disastermanagementcloudrun"
+#       region: "asia-south2"
+#       image: $AR_IMAGE
