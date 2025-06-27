@@ -20,7 +20,7 @@ stages:
   - deploy
 
 variables:
-  AR_IMAGE: asia-south2-docker.pkg.dev/multi-ai-agent-system-463413/disastermanagement-repo/disastermanagement:$CI_COMMIT_SHORT_SHA
+  AR_IMAGE: asia-south2-docker.pkg.dev/multi-ai-agent-system-463413/disastermanagement-repo/main:$CI_COMMIT_SHORT_SHA
 
 build:
   image: docker:20.10
