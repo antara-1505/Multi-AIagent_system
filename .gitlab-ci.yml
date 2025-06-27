@@ -87,5 +87,5 @@ include:
       stage: deploy
       project_id: "multi-ai-agent-system-463413"
       service: "disastermanagementcloudrun"
-      region: "asia-south2"
+      region: "us-east1"
       image: $AR_IMAGE
