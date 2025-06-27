@@ -16,21 +16,25 @@
 # This specific template is located at:
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
 
-image: google/cloud-sdk:slim
+image: google/cloud-sdk:latest
 
-stages:
-  - build
+services:
+  - docker:dind
 
 variables:
+  DOCKER_TLS_CERTDIR: ""
   PROJECT_ID: "multi-ai-agent-system-463413"
   REGION: "asia-south2"
+
+before_script:
+  - echo "$GCLOUD_SERVICE_KEY" | base64 -d > ${HOME}/gcloud-key.json
+  - gcloud auth activate-service-account --key-file=${HOME}/gcloud-key.json
+  - gcloud auth configure-docker $REGION-docker.pkg.dev
 
 build:
   stage: build
   script:
-    - echo "$GCLOUD_SERVICE_KEY" | base64 -d > ${HOME}/gcloud-key.json
-    - gcloud auth activate-service-account --key-file=${HOME}/gcloud-key.json
-    - gcloud auth configure-docker $REGION-docker.pkg.dev
+    - docker info  # Verify Docker daemon is accessible
     - docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/my-repo/my-image:$CI_COMMIT_SHORT_SHA .
     - docker push $REGION-docker.pkg.dev/$PROJECT_ID/my-repo/my-image:$CI_COMMIT_SHORT_SHA
 
