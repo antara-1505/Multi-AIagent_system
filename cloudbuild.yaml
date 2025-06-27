@@ -1,11 +1,11 @@
 steps:
 # Build the container image
 - name: 'gcr.io/cloud-builders/docker'
-  dir: 'surveilliance-api'
-  args: ['build', '-t', 'us-east1-docker.pkg.dev/$PROJECT_ID/my-docker-images-repo/surveillianceupdate:$COMMIT_SHA', '.']
+#  dir: 'surveilliance-api'
+  args: ['build', '-t', 'asia-docker.pkg.dev/$PROJECT_ID/disastermanagement-repo/update:$COMMIT_SHA', '.']
 # Push the container image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'us-east1-docker.pkg.dev/$PROJECT_ID/my-docker-images-repo/surveillianceupdate:$COMMIT_SHA']
+  args: ['push', 'asia-docker.pkg.dev/$PROJECT_ID/disastermanagement/update:$COMMIT_SHA']
 # Deploy container image to Cloud Run
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
@@ -13,11 +13,11 @@ steps:
     - 'beta'
     - 'run'
     - 'deploy'
-    - 'svc-helloworld'
+    - 'disastermanagementcloudrun'
     - '--image'
-    - 'us-east1-docker.pkg.dev/$PROJECT_ID/my-docker-images-repo/surveillianceupdate:$COMMIT_SHA'
+    - 'asia-docker.pkg.dev/$PROJECT_ID/disastermanagement/update:$COMMIT_SHA'
     - '--region'
-    - 'us-east1'
+    - 'asia-south2'
     - '--platform'
     - 'managed'
     - '--min-instances'
@@ -26,4 +26,6 @@ steps:
     - '1'
     - '--allow-unauthenticated'
 images:
-- 'us-east1-docker.pkg.dev/$PROJECT_ID/my-docker-images-repo/surveillianceupdate'
+- 'asia-docker.pkg.dev/$PROJECT_ID/disastermanagement/update'
+options:
+  logging: CLOUD_LOGGING_ONLY
