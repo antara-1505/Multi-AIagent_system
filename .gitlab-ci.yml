@@ -37,6 +37,7 @@ build:
   only:
     - main
 
+
 deploy:
   image: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
   stage: deploy
