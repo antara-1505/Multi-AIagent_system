@@ -53,7 +53,6 @@
 #         --project=multi-ai-agent-system-463413
 #   only:
 #     - main
-
 stages:
   - build
   - upload
