@@ -15,42 +15,37 @@
 # https://docs.gitlab.com/development/cicd/templates/
 # This specific template is located at:
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
-
-stages:          # List of stages for jobs, and their order of execution
+stages:
   - build
-  - test
-  - deploy
   - upload
+  - deploy
 
-build-job:       # This job runs in the build stage, which runs first.
+variables:
+  GITLAB_IMAGE: $CI_REGISTRY_IMAGE/main:$CI_COMMIT_SHORT_SHA
+  AR_IMAGE: asia-docker.pkg.dev/multi-ai-agent-system-463413/disastermanagement-repo/main:$CI_COMMIT_SHORT_SHA
+
+build:
   stage: build
+  # tags: [saas-linux-2xlarge-amd64]
+  image: docker:20.10
+  services:
+    - docker:20.10-dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
   script:
-    - echo "Compiling the code..."
-    - echo "Compile complete."
+    - docker build -t "$GITLAB_IMAGE" .
+    - docker push "$GITLAB_IMAGE"
 
-unit-test-job:   # This job runs in the test stage.
-  stage: test    # It only starts when the job in the build stage completes successfully.
-  script:
-    - echo "Running unit tests... This will take about 60 seconds."
-    - sleep 60
-    - echo "Code coverage is 90%"
-
-lint-test-job:   # This job also runs in the test stage.
-  stage: test    # It can run at the same time as unit-test-job (in parallel).
-  script:
-    - echo "Linting code... This will take about 10 seconds."
-    - sleep 10
-    - echo "No lint issues found."
-
-deploy-job:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  environment: production
-  script:
-    - echo "Deploying application..."
-    - echo "Application successfully deployed."
 include:
   - component: gitlab.com/google-gitlab-components/artifact-registry/upload-artifact-registry@main
     inputs:
-      stage:  upload
-      source: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-      target: $asia-docker.pkg.dev/multi-ai-agent-system-463413/disastermanagement-repo/main:$CI_COMMIT_SHORT_SHA
+      stage: upload
+      source: $GITLAB_IMAGE
+      target: $AR_IMAGE
+  - component: gitlab.com/google-gitlab-components/cloud-run/deploy-cloud-run@main
+    inputs:
+      stage: deploy
+      project_id: "multi-ai-agent-system-463413"
+      service: "disastermanagementcloudrun"
+      region: "asia-south2"
+      image: $AR_IMAGE
