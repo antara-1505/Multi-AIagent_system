@@ -27,8 +27,8 @@ build:
   stage: build
   services:
     - docker:20.10-dind
-  # before_script:
-  #   - docker login -u _json_key -p "$GCLOUD_SERVICE_KEY" https://asia-south2-docker.pkg.dev
+  before_script:
+    - docker login -u _json_key -p "$GCLOUD_SERVICE_KEY" https://asia-south2-docker.pkg.dev
   script:
     - docker build -t "$AR_IMAGE" .
     - docker push "$AR_IMAGE"
