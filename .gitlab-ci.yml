@@ -15,43 +15,62 @@
 # https://docs.gitlab.com/development/cicd/templates/
 # This specific template is located at:
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
+
+image: google/cloud-sdk:slim
+
 stages:
   - build
-  - deploy
 
 variables:
-  AR_IMAGE: asia-south2-docker.pkg.dev/multi-ai-agent-system-463413/disastermanagement-repo/main:$CI_COMMIT_SHORT_SHA
+  PROJECT_ID: "multi-ai-agent-system-463413"
+  REGION: "asia-south2"
 
 build:
-  image: docker:20.10
   stage: build
-  services:
-    - docker:20.10-dind
-  before_script:
+  script:
     - echo "$GCLOUD_SERVICE_KEY" | base64 -d > ${HOME}/gcloud-key.json
     - gcloud auth activate-service-account --key-file=${HOME}/gcloud-key.json
-    - gcloud auth configure-docker asia-south2-docker.pkg.dev --quiet
-  script:
-    - docker build -t "$AR_IMAGE" .
-    - docker push "$AR_IMAGE"
-  artifacts:
-    expire_in: 1 hour
-  only:
-    - main
+    - gcloud auth configure-docker $REGION-docker.pkg.dev
+    - docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/my-repo/my-image:$CI_COMMIT_SHORT_SHA .
+    - docker push $REGION-docker.pkg.dev/$PROJECT_ID/my-repo/my-image:$CI_COMMIT_SHORT_SHA
+
+# stages:
+#   - build
+#   - deploy
+
+# variables:
+#   AR_IMAGE: asia-south2-docker.pkg.dev/multi-ai-agent-system-463413/disastermanagement-repo/main:$CI_COMMIT_SHORT_SHA
+
+# build:
+#   image: docker:20.10
+#   stage: build
+#   services:
+#     - docker:20.10-dind
+#   before_script:
+#     - echo "$GCLOUD_SERVICE_KEY" | base64 -d > ${HOME}/gcloud-key.json
+#     - gcloud auth activate-service-account --key-file=${HOME}/gcloud-key.json
+#     - gcloud auth configure-docker asia-south2-docker.pkg.dev --quiet
+#   script:
+#     - docker build -t "$AR_IMAGE" .
+#     - docker push "$AR_IMAGE"
+#   artifacts:
+#     expire_in: 1 hour
+#   only:
+#     - main
 
 
-deploy:
-  image: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-  stage: deploy
-  script:
-    - gcloud run deploy disastermanagementcloudrun \
-        --image="$AR_IMAGE" \
-        --platform=managed \
-        --region=asia-south2 \
-        --allow-unauthenticated \
-        --project=multi-ai-agent-system-463413
-  only:
-    - main
+# deploy:
+#   image: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+#   stage: deploy
+#   script:
+#     - gcloud run deploy disastermanagementcloudrun \
+#         --image="$AR_IMAGE" \
+#         --platform=managed \
+#         --region=asia-south2 \
+#         --allow-unauthenticated \
+#         --project=multi-ai-agent-system-463413
+#   only:
+#     - main
 # stages:
 #   - build
 #   - upload
