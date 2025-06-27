@@ -28,7 +28,9 @@ build:
   services:
     - docker:20.10-dind
   before_script:
-    - docker login -u _json_key -p "$GCLOUD_SERVICE_KEY" https://asia-south2-docker.pkg.dev
+    - echo "$GCLOUD_SERVICE_KEY" | base64 -d > ${HOME}/gcloud-key.json
+    - gcloud auth activate-service-account --key-file=${HOME}/gcloud-key.json
+    - gcloud auth configure-docker asia-south2-docker.pkg.dev --quiet
   script:
     - docker build -t "$AR_IMAGE" .
     - docker push "$AR_IMAGE"
