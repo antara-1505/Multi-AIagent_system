@@ -16,27 +16,6 @@
 # This specific template is located at:
 # https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
 
-image: google/cloud-sdk:latest
-
-services:
-  - docker:dind
-
-variables:
-  DOCKER_TLS_CERTDIR: ""
-  PROJECT_ID: "multi-ai-agent-system-463413"
-  REGION: "asia-south2"
-
-before_script:
-  - echo "$GCLOUD_SERVICE_KEY" | base64 -d > ${HOME}/gcloud-key.json
-  - gcloud auth activate-service-account --key-file=${HOME}/gcloud-key.json
-  - gcloud auth configure-docker $REGION-docker.pkg.dev
-
-build:
-  stage: build
-  script:
-    - docker info  # Verify Docker daemon is accessible
-    - docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/my-repo/my-image:$CI_COMMIT_SHORT_SHA .
-    - docker push $REGION-docker.pkg.dev/$PROJECT_ID/my-repo/my-image:$CI_COMMIT_SHORT_SHA
 
 # stages:
 #   - build
@@ -75,37 +54,37 @@ build:
 #         --project=multi-ai-agent-system-463413
 #   only:
 #     - main
-# stages:
-#   - build
-#   - upload
-#   - deploy
+stages:
+  - build
+  - upload
+  - deploy
 
-# variables:
-#   GITLAB_IMAGE: $CI_REGISTRY_IMAGE/main:$CI_COMMIT_SHORT_SHA
-#   AR_IMAGE: asia-docker.pkg.dev/multi-ai-agent-system-463413/disastermanagement-repo/main:$CI_COMMIT_SHORT_SHA
+variables:
+  GITLAB_IMAGE: $CI_REGISTRY_IMAGE/main:$CI_COMMIT_SHORT_SHA
+  AR_IMAGE: asia-docker.pkg.dev/multi-ai-agent-system-463413/disastermanagement-repo/main:$CI_COMMIT_SHORT_SHA
 
-# build:
-#   stage: build
-#   # tags: [saas-linux-2xlarge-amd64]
-#   image: docker:20.10
-#   services:
-#     - docker:20.10-dind
-#   before_script:
-#     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-#   script:
-#     - docker build -t "$GITLAB_IMAGE" .
-#     - docker push "$GITLAB_IMAGE"
+build:
+  stage: build
+  # tags: [saas-linux-2xlarge-amd64]
+  image: docker:20.10
+  services:
+    - docker:20.10-dind
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - docker build -t "$GITLAB_IMAGE" .
+    - docker push "$GITLAB_IMAGE"
 
-# include:
-#   - component: gitlab.com/google-gitlab-components/artifact-registry/upload-artifact-registry@main
-#     inputs:
-#       stage: upload
-#       source: $GITLAB_IMAGE
-#       target: $AR_IMAGE
-#   - component: gitlab.com/google-gitlab-components/cloud-run/deploy-cloud-run@main
-#     inputs:
-#       stage: deploy
-#       project_id: "multi-ai-agent-system-463413"
-#       service: "disastermanagementcloudrun"
-#       region: "asia-south2"
-#       image: $AR_IMAGE
+include:
+  - component: gitlab.com/google-gitlab-components/artifact-registry/upload-artifact-registry@main
+    inputs:
+      stage: upload
+      source: $GITLAB_IMAGE
+      target: $AR_IMAGE
+  - component: gitlab.com/google-gitlab-components/cloud-run/deploy-cloud-run@main
+    inputs:
+      stage: deploy
+      project_id: "multi-ai-agent-system-463413"
+      service: "disastermanagementcloudrun"
+      region: "asia-south2"
+      image: $AR_IMAGE
