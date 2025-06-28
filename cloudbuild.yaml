@@ -5,7 +5,7 @@ steps:
   args: ['build', '-t', 'asia-docker.pkg.dev/$PROJECT_ID/disastermanagement-repo/update:$COMMIT_SHA', '.']
 # Push the container image to Container Registry
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'asia-docker.pkg.dev/$PROJECT_ID/disastermanagement/update:$COMMIT_SHA']
+  args: ['push', 'asia-docker.pkg.dev/$PROJECT_ID/disastermanagement-repo/update:$COMMIT_SHA']
 # Deploy container image to Cloud Run
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
@@ -15,7 +15,7 @@ steps:
     - 'deploy'
     - 'disastermanagementcloudrun'
     - '--image'
-    - 'asia-docker.pkg.dev/$PROJECT_ID/disastermanagement/update:$COMMIT_SHA'
+    - 'asia-docker.pkg.dev/$PROJECT_ID/disastermanagement-repo/update:$COMMIT_SHA'
     - '--region'
     - 'asia-south2'
     - '--platform'
@@ -26,6 +26,6 @@ steps:
     - '1'
     - '--allow-unauthenticated'
 images:
-- 'asia-docker.pkg.dev/$PROJECT_ID/disastermanagement/update'
+- 'asia-docker.pkg.dev/$PROJECT_ID/disastermanagement-repo/update'
 options:
   logging: CLOUD_LOGGING_ONLY
