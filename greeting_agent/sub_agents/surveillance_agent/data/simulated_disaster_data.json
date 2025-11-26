@@ -1,0 +1,102 @@
+[
+  {
+    "zone": "Zone A",
+    "coordinates": [
+      21.5612,
+      85.4811
+    ],
+    "route_status": "CONGESTED",
+    "osm_flooded": false,
+    "rainfall_mm": 52
+  },
+  {
+    "zone": "Zone B",
+    "coordinates": [
+      26.9684,
+      76.9019
+    ],
+    "route_status": "CLEAR",
+    "osm_flooded": false,
+    "rainfall_mm": 48
+  },
+  {
+    "zone": "Zone C",
+    "coordinates": [
+      22.8789,
+      81.0915
+    ],
+    "route_status": "CONGESTED",
+    "osm_flooded": false,
+    "rainfall_mm": 64
+  },
+  {
+    "zone": "Zone D",
+    "coordinates": [
+      26.2675,
+      74.271
+    ],
+    "route_status": "BLOCKED",
+    "osm_flooded": true,
+    "rainfall_mm": 188
+  },
+  {
+    "zone": "Zone E",
+    "coordinates": [
+      24.8203,
+      86.7695
+    ],
+    "route_status": "CLEAR",
+    "osm_flooded": true,
+    "rainfall_mm": 105
+  },
+  {
+    "zone": "Zone F",
+    "coordinates": [
+      19.0736,
+      83.5448
+    ],
+    "route_status": "BLOCKED",
+    "osm_flooded": true,
+    "rainfall_mm": 65
+  },
+  {
+    "zone": "Zone G",
+    "coordinates": [
+      21.3987,
+      86.4826
+    ],
+    "route_status": "BLOCKED",
+    "osm_flooded": true,
+    "rainfall_mm": 124
+  },
+  {
+    "zone": "Zone H",
+    "coordinates": [
+      22.2206,
+      78.2362
+    ],
+    "route_status": "CONGESTED",
+    "osm_flooded": false,
+    "rainfall_mm": 17
+  },
+  {
+    "zone": "Zone I",
+    "coordinates": [
+      23.1566,
+      81.73
+    ],
+    "route_status": "CONGESTED",
+    "osm_flooded": true,
+    "rainfall_mm": 197
+  },
+  {
+    "zone": "Zone J",
+    "coordinates": [
+      19.3293,
+      77.9623
+    ],
+    "route_status": "BLOCKED",
+    "osm_flooded": false,
+    "rainfall_mm": 96
+  }
+]
