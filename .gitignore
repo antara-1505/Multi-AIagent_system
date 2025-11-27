@@ -1,2 +1,3 @@
-greeting_agent/config/*.json
-greeting_agent/config/*.txt
+greeting_agent/config/config/key.json
+greeting_agent/config/multi-ai-agent-system-463413-c47d52cb8ac2.json
+greeting_agent/config/encoded-key.txt
