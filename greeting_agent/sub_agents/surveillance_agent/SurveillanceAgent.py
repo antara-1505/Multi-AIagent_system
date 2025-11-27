@@ -57,7 +57,7 @@ class SurveillanceAgent:
     
 #     def monitor_routes(watchlist, publish_alert):
 #         for zone in watchlist:
-#             response = requests.get(f"https://maps.googleapis.com/maps/api/directions/json?origin={zone['start']}&destination={zone['end']}&departure_time=now&key=AIzaSyCjhYl7kOIB1g0NBfXefNPf_vm8zmYUY1Y")
+#             response = requests.get(f"https://maps.googleapis.com/maps/api/directions/json?origin={zone['start']}&destination={zone['end']}&departure_time=now&key=###")
 #             data = response.json()
 #             if data['status'] != 'OK' or 'warnings' in data['routes'][0]:
 #                 publish_alert(zone, "Potential Road Blockage")
