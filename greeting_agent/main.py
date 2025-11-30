@@ -18,6 +18,8 @@ from flask import Flask, request, jsonify
 #     CommsAgent().listen()
 
 app = Flask(__name__)
+def home():
+    return "Cloud Run Live!"
 @app.route('/surveillance', methods=['POST'])
 def surveillance_handler():
     return SurveillanceAgent.handle_request()
