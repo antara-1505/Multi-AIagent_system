@@ -1,5 +1,5 @@
-from google.adk.agents import Agent
-from google.adk.tools.tool_context import ToolContext
+# from google.adk.agents import Agent
+# from google.adk.tools.tool_context import ToolContext
 
 import base64
 import json
@@ -66,6 +66,15 @@ def simulate_rescue_mission(zone):
     })
 
     print(f"[Rescue Completed] Zone: {zone}, ETA: {duration}")
+
+from pubsub_client import publish_message, subscribe
+
+def rescue_callback(message):
+    print("🔥 RESCUE TASK RECEIVED:", message.data.decode())
+    message.ack()
+
+subscribe("rescue-agent-sub", rescue_callback)
+
 
 # supply_agent = Agent(
 #     name="rescue_agent",
