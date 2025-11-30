@@ -14,4 +14,5 @@ RUN pip install -r requirements.txt
 EXPOSE 8080
 
 # Run the app
-CMD ["python", "main.py"]
+# CMD ["python", "main.py"]
+CMD exec gunicorn --bind :$PORT main:app
